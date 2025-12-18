@@ -1,0 +1,41 @@
+from collections import defaultdict
+
+FAILED_THRESHOLD = 3
+
+
+def analyze_logs(log_file):
+    failed_attempts = defaultdict(int)
+
+    with open(log_file, "r") as file:
+        for line in file:
+            if "Failed password" in line:
+                parts = line.split()
+                ip = parts[10]  # IP address position
+                failed_attempts[ip] += 1
+
+    return failed_attempts
+
+
+def report(failed_attempts):
+    print("\n--- Log Analysis Report ---")
+
+    for ip, count in failed_attempts.items():
+        if count >= FAILED_THRESHOLD:
+            print(f"Suspicious IP Detected: {ip} ({count} failed attempts)")
+
+
+def main():
+    print("=== Cybersecurity Log Analyzer ===")
+
+    log_file = input("Enter log file name (e.g., auth.log): ")
+
+    try:
+        failed_attempts = analyze_logs(log_file)
+        report(failed_attempts)
+
+    except FileNotFoundError:
+        print("Log file not found.")
+
+
+if __name__ == "__main__":
+    main()
